@@ -1,0 +1,1 @@
+  <input type="hidden"  {$Field.Text}  name="{$Field.Name}" value="{$Field.Value}">

@@ -1,0 +1,1 @@
+<th>{$COLUMN.ColumnName}</th>

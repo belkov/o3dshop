@@ -1,0 +1,1 @@
+<a href="#" type="button" class="btn btn-default">{$PAGE.Page}</a>

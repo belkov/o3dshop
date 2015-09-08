@@ -1,0 +1,1 @@
+<a href="{$PAGE.PagePrev}" type="button" class="btn btn-default">&lArr;</a>

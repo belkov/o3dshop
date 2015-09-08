@@ -1,0 +1,1 @@
+<a class="active" href="#">{$PAGE.Page}</a>

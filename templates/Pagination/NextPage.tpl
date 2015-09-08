@@ -1,0 +1,1 @@
+<a href="{$PAGE.PageNext}">>></a>
