@@ -1,0 +1,21 @@
+RewriteEngine On
+RewriteBase /
+
+
+RewriteRule ^admin/$ /admin.php [L]	
+RewriteRule ^admin/([a-z]+)/$ /admin.php?region=$1 [L]	 
+RewriteRule ^admin/([a-z]+)/([a-zA-z]+)/([a-zA-z]+)/$ /admin.php?region=$1&class=$2&act=$3&page=1&%{QUERY_STRING} [L]	
+RewriteRule ^admin/([a-z]+)/([a-zA-z]+)/([a-zA-z]+)/([0-9]+)$ /admin.php?region=$1&class=$2&act=$3&page=$4&%{QUERY_STRING} [L]	
+
+
+RewriteRule ^activate/([A-Z0-9a-z]+)$ /index.php?region=ru&p1=/activate/&code=$1&%{QUERY_STRING} [L]	
+
+RewriteRule ^public/user/([0-9]+)$ /index.php?region=ru&p1=/public/user/&code=$1&%{QUERY_STRING} [L]	
+RewriteRule ^public/([0-9]+)$ /index.php?region=ru&p1=/public/&code=$1&%{QUERY_STRING} [L]	
+RewriteRule ^buy/([0-9]+)$ /index.php?region=ru&p1=/buy/&code=$1&%{QUERY_STRING} [L]	
+
+RewriteRule ^404/$ /index.php?region=ru&p1=/404/&%{QUERY_STRING} [L]
+RewriteRule ^([a-zA-Z0-9-\/]+)/([0-9]+)$ /index.php?region=ru&p1=/$1/&page=$2&%{QUERY_STRING} [L]	
+RewriteRule ^([a-zA-Z0-9-\/]+)/$ /index.php?region=ru&p1=/$1/&page=1&%{QUERY_STRING} [L]	
+
+RewriteRule ^$ /index.php?p1=/&region=ru&%{QUERY_STRING}[L] 
