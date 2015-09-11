@@ -7,7 +7,7 @@ $(document).ready(function(e) {
 		  	alert('Error обратитесь к администратору.');
 		  }else if(data.result == 1){		  	
 		  	id.parent().find("img").remove();
-		  	id.parent().append('<img src="/img/ok.png">');
+		  	id.parent().append('<img src="/i/ok.png">');
 		  }
 		}, "json");
 	});

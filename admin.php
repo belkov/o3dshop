@@ -17,6 +17,8 @@ require_once("module/classes/admin/Admin.class.php");
 require_once("module/classes/Resize.class.php"); 
 require_once("module/classes/Menu.class.php");
 require_once("module/classes/URI.class.php");
+require_once("module/classes/Filter.class.php");
+require_once("module/classes/Meta.class.php");
 // lib
 require_once("lib/phpmailer/class.phpmailer.php");
 require_once("lib/smarty/Smarty.class.php");
@@ -85,34 +87,12 @@ else {
 	$oMenu = new Menu();
 	$oMenu->setMenuParent("Информация", '/admin/'.$_GET['region'].'/');
 	
-	$parent_id = $oMenu->setMenuParent("Партнеры", null);
-	$oMenu->setMenuSubParent("Просмотр", "/admin/".$_GET['region']."/Users/Show/", $parent_id);
-	
-	$parent_id = $oMenu->setMenuParent("Продукты", null);
-	$oMenu->setMenuSubParent("Просмотр", "/admin/".$_GET['region']."/Product/Show/", $parent_id);	
-	
-	$parent_id = $oMenu->setMenuParent("Страницы", null);
-	$oMenu->setMenuSubParent("Просмотр", "/admin/".$_GET['region']."/Page/Show/", $parent_id);
-	$oMenu->setMenuSubParent("Добавить", "/admin/".$_GET['region']."/Page/Add/?req=".base64_encode(serialize("/admin/".$_GET['region']."/Page/Show/")), $parent_id);
-	
-	$parent_id = $oMenu->setMenuParent("Заказы", null); 
-	$oMenu->setMenuSubParent("Просмотр", "/admin/".$_GET['region']."/Order/Show/", $parent_id);
-	 
-	$parent_id = $oMenu->setMenuParent("Статистика", null);
-	$oMenu->setMenuSubParent("Просмотр", "/admin/".$_GET['region']."/Statistics/Show/", $parent_id);
+	$oMenu->setMenuParent("Пользователи", "/admin/".$_GET['region']."/Users/Show/", null);
+	$oMenu->setMenuParent("Товары", "/admin/".$_GET['region']."/Product/Show/", null);
+	$oMenu->setMenuParent("Категории", "/admin/".$_GET['region']."/Category/Show/", null);
 	
 	
-	
-	$parent_id = $oMenu->setMenuParent("Методы", null);
-	$oMenu->setMenuSubParent("Просмотр", "/admin/".$_GET['region']."/Method/Show/", $parent_id);
-	$oMenu->setMenuSubParent("Добавить", "/admin/".$_GET['region']."/Method/Add/?req=".base64_encode(serialize("/admin/".$_GET['region']."/Method/Show/")), $parent_id);
-	
-	$parent_id = $oMenu->setMenuParent("Выплаты", null);
-	$oMenu->setMenuSubParent("Просмотр", "/admin/".$_GET['region']."/Pay/Show/", $parent_id);
-	
-	$parent_id = $oMenu->setMenuParent("Новости", null);
-	$oMenu->setMenuSubParent("Просмотр", "/admin/".$_GET['region']."/News/Show/", $parent_id);
-	$oMenu->setMenuSubParent("Добавить", "/admin/".$_GET['region']."/News/Add/?req=".base64_encode(serialize("/admin/".$_GET['region']."/News/Show/")), $parent_id);
+	$parent_id = $oMenu->setMenuParent("Тех поддержка", "/admin/".$_GET['region']."/Support/Show/", null);
 	
 	$oBaseModule->oSmarty->assign("menu", $oMenu->getMenu());
 	

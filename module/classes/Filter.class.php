@@ -7,7 +7,7 @@ class Filter{
 	}
 
 	public static  function EmailConfirm($sValue){
-		if (!eregi("^([0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-.]?[0-9a-z])*\\.[a-wyz][a-z](fo|g|l|m|mes|o|op|pa|ro|seum|t|u|v|z)?)$", $sValue) || $sValue == "")
+		if(!filter_var($sValue, FILTER_VALIDATE_EMAIL))
 			return false;
 		return true;
 	}

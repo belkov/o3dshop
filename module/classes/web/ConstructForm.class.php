@@ -11,9 +11,11 @@ class ConstructForm extends Form{
     private $aArrTitle = array();
 	private $sName = null;
 	private $sEditName = null;
+	
     
     
     public function ConstructForm($smarty, $name = null){
+    	$this->_errorFlag = false;
 		 $this->_smarty = $smarty;
 		 $this->sName = $name;
     }
@@ -43,28 +45,26 @@ class ConstructForm extends Form{
     }
     
     public function getFormModule($iModule, $sModuleName = null){
-		$sForm  = "";
-
-		if($sModuleName <> null)
-		    $sForm .= "<div style='width:100%;text-align:left;padding-bottom: 10px;'>".$sModuleName."</div>";
-		$sForm .= "<table style='padding:5px;margin-bottom:15px;color:#FFF;text-align:right;width:98%;background-color:#FAF4E5; border:1px solid #DFD3B5;'>";
-
+		$sFormReturn  = null;
+		$sForm = null;
+		
 		foreach($this->aArr[$iModule] as $aFields){
 		    $sValue = (!isset($_REQUEST[$aFields['Name']]) || $_REQUEST[$aFields['Name']]==null)?$aFields['Value']:$_REQUEST[$aFields['Name']];
 		    $aFields['Value'] = $sValue;
-		    if($aFields['Type'] == 'text'){
-	    		$this->addFieldText($aFields['Name'], $sValue, $aFields['Caption'], $aFields['TRUE']);
-	    		$sForm .= $this->getFieldString($aFields);
+		    	if($aFields['Type'] == 'text'){
+		    		$this->addFieldText($aFields['Name'], $sValue, $aFields['Caption'], $aFields['TRUE']);
+		    		$sForm .= $this->getFieldString($aFields);
+	    	    }elseif($aFields['Type'] == 'mtext'){	    	    	
+		    		$this->addFieldText($aFields['Name'], $sValue, $aFields['Caption'], $aFields['TRUE']);
+		    		$sForm .= $this->getFieldStringM($aFields);
 	    	    }elseif($aFields['Type'] == 'text_pro'){
 		    		$this->addFieldText($aFields['Name'], $sValue, $aFields['Caption'], $aFields['TRUE']);
 		    		$sForm .= $this->getFieldStringPro($aFields);
 	    	    }else if($aFields['Type'] == 'fck'){		    		
 					$sForm .= $this->getFCKString($aFields);
-	    	    }else if($aFields['Type'] == 'checkbox'){	    
-	    	    	if($sValue == 1){
-	    	    		$aFields['Text'] .= ' checked';
-	    	    	}
-					$this->addCheckBox($aFields['Name'], $aFields['Caption'], $aFields['Text'], $aFields['TRUE']);
+	    	    }else if($aFields['Type'] == 'checkbox'){	    	    	
+	    	    	
+					$this->addCheckBox($aFields['Name'], $aFields['Caption'], $sValue, $aFields['TRUE']);
 					$sForm .= $this->getCheckBoxString($aFields);
 				}else if($aFields['Type'] == 'select'){
 					$this->addListBox($aFields['Name'], $aFields['Caption'], $aFields['Arr'], (isset($_REQUEST[$aFields['Name']]))?$_REQUEST[$aFields['Name']]:array(),false, $iCnt = 1,  $aFields['TRUE']);
@@ -90,15 +90,16 @@ class ConstructForm extends Form{
 				}elseif($aFields['Type'] == 'hidden'){
 		    		$this->addFieldText($aFields['Name'], $sValue, $aFields['Caption'], $aFields['TRUE']);
 		    		$sForm .= $this->getHidden($aFields);					
-				}elseif($aFields['Type'] == 'button'){
+				}elseif($aFields['Type'] == 'textt'){ 
 		    		$this->addFieldText($aFields['Name'], $sValue, $aFields['Caption'], $aFields['TRUE']);
-		    		$sForm .= $this->getButton($aFields);					
+		    		$sForm .= $this->getText($aFields);					
 				}
 		}
-
-		$sForm .="</table>";
-
-		return $sForm;
+		$this->_smarty->assign("iModule", $iModule);
+		$this->_smarty->assign("sForm", $sForm);
+		$sFormReturn .= $this->_smarty->fetch("Web/iTabForm.tpl");
+		
+		return $sFormReturn;
     }
 
     private $funcClass = null;
@@ -106,11 +107,12 @@ class ConstructForm extends Form{
     private $m = array();
     private $aArrs = array();
     
-    function setField($type, $name, $caption, $true, $module, $value = null, $text=null, $var = array()){
+    function setField($type, $name, $caption, $true, $module, $value = null, $text=null, $var = array(), $filter = null){
     	if(!isset($this->m[$module]))
     		$this->m[$module] = 0;
     	else
-    		$this->m[$module]++;       	    		 	
+    		$this->m[$module]++;       	
+	 		 	
     	$this->aArrs[$module][$this->m[$module]]['Text'] = $text;
     	$this->aArrs[$module][$this->m[$module]]['Arr'] = $var;
 	    $this->aArrs[$module][$this->m[$module]]['Type'] = $type;
@@ -119,7 +121,21 @@ class ConstructForm extends Form{
 	    $this->aArrs[$module][$this->m[$module]]['TRUE'] = $true; 
 	    if(!isset($value[$name]))
 	    	$value[$name] = null;
-	    $this->aArrs[$module][$this->m[$module]]['Value'] = (isset($_REQUEST[$name]))?$_REQUEST[$name]:$value[$name];	    	
+	    $this->aArrs[$module][$this->m[$module]]['Value'] = (isset($_REQUEST[$name]))?$_REQUEST[$name]:$value[$name];	    		    
+	    
+	    if(count($_POST) > 0){	    	
+		    if($filter != null){	    		    		    		    	
+	    		if(!call_user_func(array("Filter", $filter), $this->aArrs[$module][$this->m[$module]]['Value'])){    			
+	    			$this->_errorFlag = TRUE;
+	    			$this->aArrs[$module][$this->m[$module]]['Error'] = true; 
+	    		}
+	    	}    	
+	    	if(trim($this->aArrs[$module][$this->m[$module]]['Value']) == '' && $true){
+	    		$this->_errorFlag = TRUE;
+	    		$this->aArrs[$module][$this->m[$module]]['Error'] = true; 
+	    	}
+	    } 
+	    
     }
 
     function getField($module){
@@ -132,9 +148,23 @@ class ConstructForm extends Form{
     }
 
     public function getForm($sFormName = null, $sAction = null){
-		$sForm = "";
+		$sForm = "<div style='border-bottom:1px solid #CCC;height:30px;'>
+		";
 		$i = 0;
-
+		
+		if(count($this->aArrModule) > 1){
+			foreach($this->aArrModule as $iModule){	
+				if($this->aArrTitle[$i] != ''){
+					$this->_smarty->assign("itab", array('name'=>$this->aArrTitle[$i], 'id'=>$i));
+					$sForm  .= $this->_smarty->fetch("Web/iTab.tpl");
+				}
+				$i++;			
+			}
+		}
+		
+		$sForm .= "</div>
+		";
+		$i = 0;
 		foreach($this->aArrModule as $iModule){
 		    $sForm .= $this->getFormModule($iModule, $this->aArrTitle[$i]);
 		    $i++;
@@ -148,7 +178,8 @@ class ConstructForm extends Form{
 		$this->_smarty->assign("frmConfig", $this->getConfigForm());
 		$this->setSmarty(&$this->_smarty);
 		if($this->isPostBackFlag()){
-			if(!$this->FormError($_REQUEST)){							
+			
+			if(!$this->_errorFlag){							
 			    call_user_func(array($this->funcClass, $this->funcMethod));
 			}else{
 				$this->_smarty->assign("ERROR", 1);
@@ -167,15 +198,15 @@ class ConstructForm extends Form{
 		$this->_smarty->assign("Field", $aField);
 		return $this->_smarty->fetch("Web/FieldHidden.tpl");
     }
-    
-    public function getButton($aField){
-		$this->_smarty->assign("Field", $aField);
-		return $this->_smarty->fetch("Web/Button.tpl");
-    }
 
     public function getFieldString($aField){
 		$this->_smarty->assign("Field", $aField);
 		return $this->_smarty->fetch("Web/Field.tpl");
+    }
+    
+    public function getFieldStringM($aField){
+    	$this->_smarty->assign("Field", $aField);
+		return $this->_smarty->fetch("Web/FieldM.tpl");
     }
 
     public function getFieldStringPro($aField){
@@ -210,27 +241,19 @@ class ConstructForm extends Form{
 		return $this->_smarty->fetch("Web/Upload.tpl");
     }    
     
+    public function getText($aField){
+    	$this->_smarty->assign("Field", $aField);
+		return $this->_smarty->fetch("Web/Text.tpl");
+    }
+    
     public function getFieldPhoto($aField){
-
-
-$height = 150;
-    		$width = 200;
+		$height = 150;
+    	$width = 200;
 		$this->_smarty->assign("Field", $aField);
 		return $this->_smarty->fetch("Web/Photo.tpl");
     }  
     
-    public function getFieldManyPhoto($aField){
-    	if (isset($aField['Text'])){
-    		$ex = explode (',', $aField['Text']);
-    		$height = $ex['1'];
-    		$width = $ex['0'];
-    	}
-    	else {
-    		$height = 150;
-    		$width = 200;
-    	}
-    	$this->_smarty->assign("height", $height);
-    	$this->_smarty->assign("width", $width);
+    public function getFieldManyPhoto($aField){    	    
 		$this->_smarty->assign("Field", $aField);
 		return $this->_smarty->fetch("Web/ManyPhoto.tpl");
     }      

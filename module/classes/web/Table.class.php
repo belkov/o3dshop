@@ -14,14 +14,15 @@ class Table{
 	private $sName = '';
 	private $CntPage = 2;
 	private $Page = 0;
-	private  $oDB = null;
-	private $count_rows = 0;
-	
+	private $oDB = null;
+	private $count_rows = 0;	
 	private $bAct = true;
 	private $bChecked = true;
-	private  $counts = null;
+	private $counts = null;
+	private $bButtonAdd = true;
 	
-	function Table($sTName = null, $bAct = true, $bChecked = true){
+	function Table($sTName = null, $bAct = true, $bChecked = true, $bButtonAdd = true){
+		$this->bButtonAdd = $bButtonAdd;
 	    $this->sName = $sTName;
 	    $this->bAct = $bAct;
 	    $this->bChecked = $bChecked;
@@ -198,7 +199,9 @@ class Table{
 		$this->oBaseModule->oSmarty->assign("LINE", $sLine);
 		$this->oBaseModule->oSmarty->assign("TITLE", $sTitle);
 		$this->oBaseModule->oSmarty->assign("count_rows", $this->count_rows);
-
+		$this->oBaseModule->oSmarty->assign("bButtonAdd", $this->bButtonAdd);	
+		$this->oBaseModule->oSmarty->assign("request_uri", base64_encode(serialize("/admin/".$_GET['region']."/".$_GET['class']."/".$_GET['act']."/")));
+		
 		return $this->oBaseModule->oSmarty->fetch("Web/Table/Index.tpl");
 	}
 	
@@ -229,6 +232,7 @@ class Table{
 		foreach ($field as $k=>$v){
 			$this->addColumnInTable($v['0'], $k, $v['1'], true, $v['2']);	
 		}
+		
 		if($this->bAct){
 			$this->addColumnInTable("Действия", "action", "15%");
 		}

@@ -106,8 +106,8 @@ class Form{
 		if($this->_sError<>"")
 			$this->_errorFlag = TRUE;
 		foreach($this->_aField as $Field){
-
 			if(isset($Request[$Field['Name']]) && $Field['Register'] && $Request[$Field['Name']]==NULL){
+				
 				$this->_errorFlag = TRUE;
 				//$sError .= "Not enter ".$Field['Caption']."<br>";
 			}

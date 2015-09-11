@@ -15,6 +15,11 @@ class DB {
     private static $charset = 'UTF8';
 
     public static function init(){
+    	self::$host = Config::$MYSQL_HOST;
+    	self::$user = Config::$MYSQL_USER;
+    	self::$password = Config::$MYSQL_PASS;
+    	self::$db_name = Config::$DATABASE;
+    	
         self::$desc = mysqli_connect(self::$host, self::$user, self::$password, self::$db_name)
         or die("Unable to connect to MySQL");
         mysqli_set_charset ( self::$desc , self::$charset );

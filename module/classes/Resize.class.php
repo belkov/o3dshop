@@ -6,7 +6,7 @@ class Resize{
 		
 	}
 	
-	function cropImage($width2, $height2, $photo, $save, $width_true = false){				
+	public static function cropImage($width2, $height2, $photo, $save, $width_true = false){				
 		$height = $width2;		
 		$size_image = getimagesize($photo);						
 		if($size_image['1'] > $size_image['0']){
@@ -19,7 +19,7 @@ class Resize{
 		exec("convert -gravity center ".$save." -crop ".$width2."x".$height2."+0+0\! ".$save);
 	}
 	
-	function resizeImage($height = 105, $photo, $save, $width = false){
+	public static function resizeImage($height = 105, $photo, $save, $width = false){
 		$size = getimagesize($photo);	
 		if(!$width){
 			$width = $size['0']/($size['1']/$height);

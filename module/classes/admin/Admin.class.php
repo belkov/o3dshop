@@ -22,8 +22,11 @@ class Admin extends BaseModule{
 		return $this->oSmarty->fetch("Admin/Default.tpl");
 	}
 	
-	function actionShow(){	
-    	$obj = new $_GET['class'];    	
+	function actionShow(){			
+		$obj = new $_GET['class'];
+		if(isset($_POST['func'])){
+			echo call_user_func(array($obj, $_POST['func']));die();
+		}		    	
 		return call_user_func(array($obj, "action"));
 		
 	}
@@ -39,15 +42,18 @@ class Admin extends BaseModule{
     	$obj = new $_GET['class'];
 		$oForm = call_user_func(array($obj, "form_add"));		
 		$oForm->setFunctionPostBack($this, "addForm");		
+		
 		return $this->InIndex("Добавление ".$oForm->getFormName(), $oForm->getForm("", ""), 1);
 	}
 	
 	
 	function actionEdit(){
+		
 		$obj = DB::query_row("SELECT * FROM `".$_GET['table']."` WHERE `id` = '".$_GET['id']."'");
 		$class = new $_GET['class'];
 		$oForm =  call_user_func(array($class, "form"), $obj);
 		$oForm->setFunctionPostBack($this, "editForm");				
+		//echo $oForm->getForm("", "");die();
 		return $this->InIndex("Редактирование ".$oForm->getFormName(), $oForm->getForm("", ""), 1);
 	}
 	

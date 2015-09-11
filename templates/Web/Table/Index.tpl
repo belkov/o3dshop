@@ -1,3 +1,8 @@
+{if isset($bButtonAdd) && $bButtonAdd == true}
+	<div style="float:right;margin-bottom:10px;">
+		<a href="/admin/ru/{$smarty.get.class}/Add/?req={$request_uri}" class="btn btn-theme">Добавить</a>
+	</div>
+{/if}
 <form method="POST" id="frmTable" enctype="multipart/form-data"> 
 	<div class="row mt">
 	  <div class="col-md-12">
@@ -24,7 +29,7 @@
 	
 	<div class="showback">
 		{foreach from=$btn item=elem}		
-			<button type="submit" name="b1" value="{$elem}" class="btn btn-theme">{$elem}</button>
+			<button type="submit" name="b1" value="{$elem}" class="btn btn-theme action">{$elem}</button>
 		{/foreach}
 	</div>
  </form>
